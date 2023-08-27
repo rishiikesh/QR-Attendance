@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <style>
+            *{
+                margin: 0px;
+                padding: 0px;
+            }
+            
+            body{
+            background-image: url(att.jpg);
+            }
+
+            
+        /* Media query for smaller screens */
+        @media screen and (max-width: 768px) {
+            body {
+                font-size: 14px; /* Adjust font size for smaller screens */
+            }
+
+            .container {
+                max-width: 90%; /* Adjust container width for smaller screens */
+            }
+        }
+
+        /* Media query for even smaller screens */
+        @media screen and (max-width: 480px) {
+            body {
+                font-size: 12px; /* Further adjust font size for very small screens */
+            }
+        }
+
+            #h1{
+                color: aliceblue;
+                border-bottom: solid 3px blue;
+                display: inline-block;
+            }
+            
+            .container{
+                display: block;
+                margin-left: 60px;
+                margin-top: 80px;
+                margin-right: 70%;
+            }
+            
+            .box{
+                border-bottom: solid 2px blue;
+                width: 100%;
+                margin: 22px 0px;
+            }
+            
+            .box input{
+                outline: none;
+                color: white;
+                width: 20;
+                margin: 8px 0px;
+                background: none;
+                border: none;
+                outline: none;
+            }
+            
+            .btn{
+                cursor: pointer;
+                margin: 8px;
+                outline: none;
+                border-radius: 12px;
+                padding: 10px;
+                border: 2px solid blue;
+                margin-left: 6px;
+                background: none;
+                color: white;
+            }
+            
+            .btn:hover{
+                color: black;
+                background-color: rgba(109, 82, 227, 0.655);
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <form action="/admin_login" method="POST">
+
+            <h1 id="h1">Admin Login</h1>
+            <div class="box">
+            <input type="text" placeholder="Enter your Name" id="username" name="username" required>
+            </div>
+            <div class="box">
+            <input type="password" placeholder="Enter your Password" id="password" name="password" required>
+            </div>
+            <button class="btn" type="submit">Submit</button>
+        </div>
+    </form>
+        <script src="" async defer></script>
+    </body>
+</html>
+

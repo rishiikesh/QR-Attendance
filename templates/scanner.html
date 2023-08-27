@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <style>
+        #save{
+            margin : 2px;
+            border_radius: 12px;
+            background-color: red ;
+        }
+
+        #scan_result{
+            color: red;
+            
+        }
+    </style>
+
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+    <video id="video" width="640" height="480" style="border: 1px solid black;"></video>
+    <canvas id="canvas" width="640" height="480" style="border: 1px solid black; display: none;"></canvas>
+    <p id="scan_result"></p>
+    <button  id="save" onclick="saveScannedData()">Save</button>
+    <button id="quit" onclick="quitScanner()">Quit</button>
+    <script>
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        let context = canvas.getContext('2d');
+        let scanResultElement = document.getElementById('scan_result');
+        let scannedData = '';
+
+        function startScanner() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+                    requestAnimationFrame(scan);
+                })
+                .catch(function(error) {
+                    console.error('Error accessing webcam: ', error);
+                });
+            }
+        }
+
+        function scan() {
+            context.drawImage(video, 0, 0, 640, 480);
+            let imageData = context.getImageData(0, 0, 640, 480);
+            let code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code) {
+                scannedData = code.data;
+                scanResultElement.textContent = scannedData;
+            } else {
+                scannedData = '';
+                scanResultElement.textContent = '';
+            }
+
+            requestAnimationFrame(scan);
+        }
+
+        function saveScannedData() {
+            if (scannedData) {
+                alert("Scanned Data Saved: " + scannedData);
+            } else {
+                alert("No QR code detected to save.");
+            }
+        }
+
+        function quitScanner() {
+            // Stop the webcam and return to the main page
+            let stream = video.srcObject;
+            let tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            window.location.href = "/";
+        }
+
+        startScanner();
+    </script>
+</body>
+</html>
