@@ -1,0 +1,7 @@
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+import qrcode
+import io
+import base64
+from PIL import Image
+from pyzbar.pyzbar import decode
+import mysql.connector
