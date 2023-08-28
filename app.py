@@ -15,11 +15,12 @@ USER_PASSWORD = 'user'
 
 # Initialize variables to track user sessions
 admin_logged_in = False
-user_logged_in = True
+user_logged_in = False
 
 # MySQL Database Configuration
 
 db_config = {
+ #   'host': 'localhost',
     'user': 'root',
     'password': 'root',
     'database': 'info'
@@ -37,8 +38,7 @@ CREATE TABLE IF NOT EXISTS students (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     rollno VARCHAR(10),
-    student_id VARCHAR(10),
-    scanned_data VARCHAR(80)
+    student_id VARCHAR(10)
 )
 """
 
@@ -66,6 +66,14 @@ def generate_qr():
         buffered = io.BytesIO()
         qr.save(buffered, format='PNG')
         qr_image_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+        # Insert data into the 'students' table
+        insert_query = "INSERT INTO students (name, rollno, student_id) VALUES (%s, %s, %s)"
+        insert_data = (name, rollno, student_id)
+
+        db_cursor.execute(insert_query, insert_data)
+        db_conn.commit()
+
         return render_template('index.html', qr_image_base64=qr_image_base64, admin_logged_in=admin_logged_in, user_logged_in=user_logged_in)
 
     return render_template('index.html', admin_logged_in=admin_logged_in, user_logged_in=user_logged_in)
@@ -91,26 +99,7 @@ def decode_qr():
 
         if qr_codes:
             data = qr_codes[0].data.decode('utf-8')
-            
-            # Extract student information from scanned data
-            student_info = data.split('\n')
-            
-            if len(student_info) >= 3:
-                name = student_info[0].split(': ')[1]
-                rollno = student_info[1].split(': ')[1]
-                student_id = student_info[2].split(': ')[1]
-                scannedData = scannedData[3].split(': ')[1]
-                
-                # Insert scanned data into the 'students' table
-                insert_query = "INSERT INTO students (name, rollno, student_id,scanned_data) VALUES (%s, %s, %s, %s)"
-                insert_data = (name, rollno, student_id, scannedData)
-                
-                db_cursor.execute(insert_query, insert_data)
-                db_conn.commit()
-                
-                return jsonify({'scannedData': data, 'saved': True})
-            else:
-                return jsonify({'scannedData': 'Invalid QR code data.'})
+            return jsonify({'scannedData': data})
         else:
             return jsonify({'scannedData': 'QR code not detected.'})
 
@@ -122,7 +111,7 @@ def admin_login():
         password = request.form['password']
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             admin_logged_in = True
-            return redirect(url_for('index'))
+            return redirect(url_for('generate_qr'))
     return render_template('admin_login.html')
 
 @app.route('/user_login', methods=['GET', 'POST'])
@@ -133,7 +122,8 @@ def user_login():
         password = request.form['password']
         if username == USER_USERNAME and password == USER_PASSWORD:
             user_logged_in = True
-            return redirect(url_for('generate_qr'))
+            # Redirect to generate_qr route after successful user login
+            return redirect(url_for('scan_qr'))
     return render_template('user_login.html')
 
 @app.route('/logout')
