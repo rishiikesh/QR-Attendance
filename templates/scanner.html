@@ -25,6 +25,7 @@
     <button  id="save" onclick="saveScannedData()">Save</button>
     <button id="quit" onclick="quitScanner()">Quit</button>
     <script>
+        
         let video = document.getElementById('video');
         let canvas = document.getElementById('canvas');
         let context = canvas.getContext('2d');
@@ -61,12 +62,25 @@
             requestAnimationFrame(scan);
         }
 
+        
         function saveScannedData() {
             if (scannedData) {
                 alert("Scanned Data Saved: " + scannedData);
             } else {
                 alert("No QR code detected to save.");
             }
+            var paragraphText = document.getElementById("scan_result").value;
+            var connection = mysql.createConnection({
+                user: "root",
+                password: "root",
+                database: "info"
+              });
+            
+              // Insert the paragraph text into the table.
+              connection.query("INSERT INTO attendance (Data) VALUES (?)", [paragraphText]);
+            
+              // Close the connection to the database.
+              connection.close();
         }
 
         function quitScanner() {
