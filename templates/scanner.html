@@ -6,7 +6,7 @@
     <style>
         #save{
             margin : 2px;
-            border_radius: 12px;
+            border-radius: 12px;
             background-color: red ;
         }
 
@@ -65,24 +65,37 @@
         
         function saveScannedData() {
             if (scannedData) {
-                alert("Scanned Data Saved: " + scannedData);
+                // Add a timestamp to the scanned data
+                const currentTime = new Date().toLocaleString();
+                const dataWithTimestamp = `${scannedData} - ${currentTime}`;
+                alert("Scanned Data Saved: " + dataWithTimestamp);
+        
+                // Send a POST request to the server
+                fetch('/save_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: dataWithTimestamp })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Failed to save data on the server.');
+                    }
+                })
+                .then(data => {
+                    alert(data); // Display the response from the server
+                })
+                .catch(error => {
+                    console.error(error);
+                });
             } else {
                 alert("No QR code detected to save.");
             }
-            var paragraphText = document.getElementById("scan_result").value;
-            var connection = mysql.createConnection({
-                user: "root",
-                password: "root",
-                database: "info"
-              });
-            
-              // Insert the paragraph text into the table.
-              connection.query("INSERT INTO attendance (Data) VALUES (?)", [paragraphText]);
-            
-              // Close the connection to the database.
-              connection.close();
         }
-
+        
         function quitScanner() {
             // Stop the webcam and return to the main page
             let stream = video.srcObject;

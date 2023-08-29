@@ -133,5 +133,31 @@ def logout():
     user_logged_in = False
     return redirect(url_for('index'))
 
+@app.route('/save_data', methods=['POST'])
+def save_data():
+    try:
+        data = request.json.get('data')
+
+        if data:
+            # Connect to the database
+            connection = mysql.connector.connect(**db_config)
+
+            # Create a cursor object to interact with the database
+            cursor = connection.cursor()
+
+            # Insert the data into the 'attendance' table
+            cursor.execute("INSERT INTO attendance (Data) VALUES (%s)", (data,))
+
+            # Commit the transaction and close the database connection
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+            return 'Data saved successfully', 200
+        else:
+            return 'No data to save', 400
+    except Exception as e:
+        return f'Error saving data: {str(e)}', 500
+
 if __name__ == '__main__':
     app.run(debug=True)
