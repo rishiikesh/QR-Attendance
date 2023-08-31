@@ -139,25 +139,64 @@ def save_data():
         data = request.json.get('data')
 
         if data:
+            # Extract the ID from the data using a regular expression
+            import re
+            match = re.search(r'ID: (\d+)', data)
+            if match:
+                id_value = match.group(1)
+
+                # Connect to the database
+                connection = mysql.connector.connect(**db_config)
+
+                # Create a cursor object to interact with the database
+                cursor = connection.cursor()
+
+                # Insert the data and extracted ID into the 'attendance' table
+                cursor.execute("INSERT INTO attendance (Data, ID) VALUES (%s, %s)", (data, id_value))
+
+                # Commit the transaction and close the database connection
+                connection.commit()
+                cursor.close()
+                connection.close()
+
+                return 'Data saved successfully', 200
+            else:
+                return 'No ID found in data', 400
+        else:
+            return 'No data to save', 400
+    except Exception as e:
+        return f'Error saving data: {str(e)}', 500
+    
+@app.route('/display_data', methods=['GET', 'POST'])
+def display_data():
+    if request.method == 'POST':
+        try:
+            # Get the user input ID from the form
+            search_id = request.form['id']
+
             # Connect to the database
             connection = mysql.connector.connect(**db_config)
 
             # Create a cursor object to interact with the database
             cursor = connection.cursor()
 
-            # Insert the data into the 'attendance' table
-            cursor.execute("INSERT INTO attendance (Data) VALUES (%s)", (data,))
+            # Retrieve data from the 'attendance' table based on the user input ID
+            select_query = "SELECT Data, ID FROM attendance WHERE ID = %s"
+            cursor.execute(select_query, (search_id,))
+            data = cursor.fetchall()
 
-            # Commit the transaction and close the database connection
-            connection.commit()
+            # Close the cursor and the database connection
             cursor.close()
             connection.close()
 
-            return 'Data saved successfully', 200
-        else:
-            return 'No data to save', 400
-    except Exception as e:
-        return f'Error saving data: {str(e)}', 500
+            return render_template('display_data.html', data=data, search_id=search_id)
+
+        except Exception as e:
+            return f'Error fetching data: {str(e)}', 500
+
+    return render_template('user_input.html')
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
