@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+</head>
+<body>
+    <h1>User Login</h1>
+    
+    <!-- Form to enter the ID -->
+    <form method="POST" action="/display_data_by_id">
+        <label for="user_id">Enter User ID:</label>
+        <input type="text" id="user_id" name="search_id" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if data %}
+    <h2>Data for ID {{ search_id }}</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+</body>
+</html>
