@@ -4,6 +4,8 @@
     <title>QR Code Generator</title>
     <style>
         body {
+            background-image: url("{{ url_for('static', filename='Website.png') }}");
+            background-size: cover;
             font-family: Arial, sans-serif;
             text-align: center;
             margin-top: 50px;
@@ -16,10 +18,13 @@
         form {
             max-width: 400px;
             margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding-left: 20px;
+            padding-right: 40px;
+            padding-bottom: 20px;
+            padding-top: 20px;
+            box-shadow: 0 4px 6px rgba(107, 4, 234, 0.1);
+            border: solid  white 0.1px;
+            border-radius: 20px;
         }
 
         label {
@@ -39,15 +44,17 @@
         input[type="submit"] {
             width: 100%;
             padding: 10px;
-            background-color: #4CAF50;
+            background-color: brown;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transform: scale(1.05);
         }
 
         input[type="submit"]:hover {
-            background-color: #45a049;
+            background-color: bisque;
+            color: black;
         }
 
         img {
@@ -63,13 +70,32 @@
                 max-width: 90%;
             }
         }
+
+        button.btn{
+           border-radius: 5px;
+           text-decoration: none;
+           padding: 5px;
+        }
+
+        button.btn:hover{
+            background-color: bisque;
+        }
+
+        a{
+            text-decoration: none;
+        }
+
+        a:hover{
+            color: black;
+        }
+
     </style>
 </head>
 <body>
     <h1>QR Code Generator</h1>
     <form action="/generate_qr" method="post">
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br>
+        <input type="text" id="name" name="name" required autocomplete="off"><br>
         <label for="rollno">Roll No:</label>
         <input type="text" id="rollno" name="rollno" required><br>
         <label for="id">ID:</label>
@@ -82,6 +108,7 @@
         <img src="data:image/png;base64,{{ qr_image_base64 }}" alt="QR Code">
     {% endif %}
 <br>
-<button><a href="/scan_qr" target="_blank">Scan QR</a></button>
+<button class="btn"><a href="/scan_qr" target="_blank">Scan QR</a></button>
+<button class="btn"><a href="/display_data">View Attendance</a></button>
 </body>
 </html>

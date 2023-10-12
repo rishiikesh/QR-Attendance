@@ -1,21 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login</title>
+    <style>
+        body {
+            
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: rgba(159, 69, 45, 0.426);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: brown;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: brown;
+            color: #fff;
+        }
+
+       
+
+        /* Media query for smaller screens */
+        @media screen and (max-width: 600px) {
+            table {
+                width: 100%;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        /* Animation for table row on hover */
+        tr:hover {
+            background-color: bisque;
+            color: black;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
 </head>
 <body>
-    <h1>User Login</h1>
-    
-    <!-- Form to enter the ID -->
-    <form method="POST" action="/display_data_by_id">
-        <label for="user_id">Enter User ID:</label>
-        <input type="text" id="user_id" name="search_id" required>
-        <button type="submit">Submit</button>
-    </form>
-
+    <h1>User Attendance Data</h1>
     {% if data %}
     <h2>Data for ID {{ search_id }}</h2>
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>Data</th>
@@ -32,6 +82,5 @@
         </tbody>
     </table>
     {% endif %}
-
 </body>
 </html>

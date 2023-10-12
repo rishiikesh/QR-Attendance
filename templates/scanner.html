@@ -14,16 +14,73 @@
             color: red;
             
         }
+        
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p#scan_result {
+            background-color: brown;
+            color: white;
+            font-size: 22px;
+            margin: 10px 0;
+        }
+
+        #save, #quit,#view {
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: rgba(175, 106, 21, 0.823);
+            color: black;
+            transition: background-color 0.3s;
+            border: solid 1px black;
+        }
+
+        #save:hover, #quit:hover, #view:hover {
+            background-color: bisque;
+        }
+
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            p#scan_result {
+                font-size: 22;
+            }
+
+            #save, #quit {
+                font-size: 16px;
+            }
+        }
+
+        a{
+            color: black;
+            text-decoration: none;
+        }
+
     </style>
 
 </head>
 <body>
     <h1>QR Code Scanner</h1>
-    <video id="video" width="640" height="480" style="border: 1px solid black;"></video>
+    <video id="video" width="640" height="480"></video>
     <canvas id="canvas" width="640" height="480" style="border: 1px solid black; display: none;"></canvas>
     <p id="scan_result"></p>
     <button  id="save" onclick="saveScannedData()">Save</button>
     <button id="quit" onclick="quitScanner()">Quit</button>
+    <button id="view"><a href="/display_data">View Attendance</a></button>
     <script>
         
         let video = document.getElementById('video');
@@ -65,12 +122,9 @@
         
         function saveScannedData() {
             if (scannedData) {
-                // Add a timestamp to the scanned data
                 const currentTime = new Date().toLocaleString();
                 const dataWithTimestamp = `${scannedData} - ${currentTime}`;
                 alert("Scanned Data Saved: " + dataWithTimestamp);
-        
-                // Send a POST request to the server
                 fetch('/save_data', {
                     method: 'POST',
                     headers: {
@@ -86,7 +140,7 @@
                     }
                 })
                 .then(data => {
-                    alert(data); // Display the response from the server
+                    alert(data); 
                 })
                 .catch(error => {
                     console.error(error);
@@ -97,7 +151,6 @@
         }
         
         function quitScanner() {
-            // Stop the webcam and return to the main page
             let stream = video.srcObject;
             let tracks = stream.getTracks();
             tracks.forEach(track => track.stop());

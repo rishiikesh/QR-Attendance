@@ -13,11 +13,8 @@ ADMIN_PASSWORD = 'admin'
 USER_USERNAME = 'user'
 USER_PASSWORD = 'user'
 
-# Initialize variables to track user sessions
 admin_logged_in = False
 user_logged_in = False
-
-# MySQL Database Configuration
 
 db_config = {
  #   'host': 'localhost',
@@ -26,13 +23,9 @@ db_config = {
     'database': 'info'
 }
 
-# Create a MySQL database connection
 db_conn = mysql.connector.connect(**db_config)
-
-# Create a cursor to execute SQL queries
 db_cursor = db_conn.cursor()
 
-# Define a table creation query
 create_table_query = """
 CREATE TABLE IF NOT EXISTS students (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,8 +34,6 @@ CREATE TABLE IF NOT EXISTS students (
     student_id VARCHAR(10)
 )
 """
-
-# Execute the table creation query
 db_cursor.execute(create_table_query)
 
 @app.route('/')
@@ -61,13 +52,10 @@ def generate_qr():
 
         data = f"Name: {name}\nRoll No: {rollno}\nID: {student_id}"
         qr = qrcode.make(data)
-
-        # Convert the QR code image to base64 string
         buffered = io.BytesIO()
         qr.save(buffered, format='PNG')
         qr_image_base64 = base64.b64encode(buffered.getvalue()).decode()
 
-        # Insert data into the 'students' table
         insert_query = "INSERT INTO students (name, rollno, student_id) VALUES (%s, %s, %s)"
         insert_data = (name, rollno, student_id)
 
@@ -122,7 +110,7 @@ def user_login():
         password = request.form['password']
         if username == USER_USERNAME and password == USER_PASSWORD:
             user_logged_in = True
-            # Redirect to generate_qr route after successful user login
+            
             return redirect(url_for('scan_qr'))
     return render_template('user_login.html')
 
@@ -139,22 +127,13 @@ def save_data():
         data = request.json.get('data')
 
         if data:
-            # Extract the ID from the data using a regular expression
             import re
             match = re.search(r'ID: (\d+)', data)
             if match:
                 id_value = match.group(1)
-
-                # Connect to the database
                 connection = mysql.connector.connect(**db_config)
-
-                # Create a cursor object to interact with the database
                 cursor = connection.cursor()
-
-                # Insert the data and extracted ID into the 'attendance' table
                 cursor.execute("INSERT INTO attendance (Data, ID) VALUES (%s, %s)", (data, id_value))
-
-                # Commit the transaction and close the database connection
                 connection.commit()
                 cursor.close()
                 connection.close()
@@ -171,32 +150,20 @@ def save_data():
 def display_data():
     if request.method == 'POST':
         try:
-            # Get the user input ID from the form
             search_id = request.form['id']
-
-            # Connect to the database
             connection = mysql.connector.connect(**db_config)
-
-            # Create a cursor object to interact with the database
             cursor = connection.cursor()
-
-            # Retrieve data from the 'attendance' table based on the user input ID
             select_query = "SELECT Data, ID FROM attendance WHERE ID = %s"
             cursor.execute(select_query, (search_id,))
             data = cursor.fetchall()
-
-            # Close the cursor and the database connection
             cursor.close()
             connection.close()
-
             return render_template('display_data.html', data=data, search_id=search_id)
 
         except Exception as e:
             return f'Error fetching data: {str(e)}', 500
 
     return render_template('user_input.html')
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
